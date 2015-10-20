@@ -1,0 +1,112 @@
+-- Game of life
+cellon = 'O'
+celloff = ' '
+
+--pulsar
+pulsar =["                 ","    OOO   OOO    ","                 ","  O    O O    O  ","  O    O O    O  ","  O    O O    O  ","    OOOO OOOO    ","                 ","    OOOO OOOO    ","  O    O O    O  ","  O    O O    O  ","  O    O O    O  ","                 ","    OOO   OOO    ","                 ","                 "]
+
+--glider
+glider =[" O        ","  O       ","OOO       ","          ","          ","          ","          ","          ","          ","          "]
+
+--agara
+agara =["          ","  OO  OO  ","  OO  OO  ","  OO  OO  ","  OO  OO  ","  OO  OO  ","  OO  OO  ","  OO  OO  ","  OO  OO  ","          "]
+
+--wick
+wick =["        OO","       O O","      O   ","     O    ","    O     ","   O      ","  O       "," O        ","O         ","          "]
+
+--alternators (blinker, frog, beacon)
+alternator =["                 ","  O         OO   ","  O    OOO  OO   ","  O   OOO     OO ","              OO ","                 "]
+
+
+--                  world  
+countneighbors :: [String]->Int->Int->Int
+countneighbors a x y = 
+	(iscellon a (x-1) (y-1)) +
+	(iscellon a (x-1) y) +
+	(iscellon a (x-1) (y+1)) +
+	(iscellon a x (y-1)) +
+	(iscellon a x (y+1)) +
+	(iscellon a (x+1) (y-1)) +
+	(iscellon a (x+1) y) +
+	(iscellon a (x+1) (y+1))
+
+--           world     x    y  result (1=true, 0=false)
+iscellon :: [String]->Int->Int->Int
+iscellon (a:as) x y
+	| x<0 = 0
+	| y<0 = 0
+	| x>= length a = 0
+	| y>= length (a:as) = 0
+	| otherwise = 
+		if getcell (a:as) x y == cellon then 1 else 0
+
+--          world     x    y  result
+getcell :: [String]->Int->Int->Char
+--getcell ((a:as):bs) 0 0 = a
+--getcell ((a:as):bs) x 0 = getcell (as:bs) (x-1) 0
+--getcell ((a:as):bs) x y = getcell (bs) x (y-1) 
+getcell as x y = ((as !! y) !!x)
+
+--          world    output
+drawworld::[String]->String
+drawworld (a:as) = 
+	let
+		width = length a
+		height = length (a:as)
+	in
+		"!"++replicate (width+1) '-'++"\n"++drawworldsized (a:as) width height
+
+--                world    wid  hei  output
+drawworldsized ::[String]->Int->Int->String
+drawworldsized [] w _ = concat (replicate (w+2) "-") ++ "\n"
+drawworldsized (a:as) w h = "|"++ a ++"|\n"++drawworldsized as w h
+
+--				world     x    y   cell
+getnewvalue :: [String]->Int->Int->Char
+getnewvalue a x y =
+	let
+		neighbors = countneighbors a x y
+	in 
+		if
+			((neighbors ==2 || neighbors==3) && iscellon a x y == 1) ||
+			(neighbors ==3 && iscellon a x y == 0)
+			--iscellon a x y == 1
+		then cellon
+		else celloff
+
+--              oldworld  newworld
+newiteration :: [String]->[String]
+newiteration (a:as) = 
+	let
+		width = length a
+		height = length (a:as)
+	in newiterationsized (a:as) (a:as) width height []
+
+
+--                   oldworld  worldpart  w    h    temp    result
+newiterationsized :: [String]->[String]->Int->Int->String->[String]
+newiterationsized _ [] _ _ _= []
+newiterationsized _ [[]] _ _ _= [[]]
+newiterationsized old ((a:as):bs) w h s=
+	let 
+		x = w - (length as)-1
+		y = h - (length bs)-1
+		new = getnewvalue old x y	
+	in 
+		if as == []
+		then [s++[new]]++newiterationsized old bs w h []
+		else newiterationsized old (as:bs) w h (s++[new])
+
+--              world   iter  output
+iterateworlds::[String]->Int->String
+iterateworlds s 0 = ""
+iterateworlds s n = 
+	let newworld = newiteration s
+	in drawworld newworld++iterateworlds newworld (n-1)
+
+--           world   iter  output
+gol::[String]->Int->String
+gol s n = drawworld s ++ iterateworlds s n
+
+gameoflife :: [String]->Int->IO()
+gameoflife s n = putStr (gol s n)

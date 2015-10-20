@@ -1,0 +1,2 @@
+# haskell
+Programming Paradigms excercises.
