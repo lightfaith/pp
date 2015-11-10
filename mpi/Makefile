@@ -1,5 +1,5 @@
 
-all: demo passing pi
+all: demo passing pi matrix
 	# DONE! #
 
 demo: demo.cpp
@@ -9,4 +9,7 @@ passing: passing.cpp
 	mpic++ $^ -o $@
 
 pi: pi.cpp
+	mpic++ $^ -o $@
+
+matrix: matrix.cpp
 	mpic++ $^ -o $@
