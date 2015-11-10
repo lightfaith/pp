@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 {
 	if(argc!=5)
 	{
-		printf("Usage: %s <h1> <w2> <h2>\n", argv[0]);
+		printf("Usage: %s <h1> <w2> <h2> <threads>\n", argv[0]);
 		return(1);
 	}
 	int w1;
