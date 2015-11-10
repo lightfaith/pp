@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 				bugloc++;
 			else
 				break;
-		printf("PI computed in %f:\n%.24fs\n", time2-time1, pi);
+		printf("PI computed in %fs:\n%.24f\n", time2-time1, pi);
 		if(bugloc<23)
 			for(int i=1; i<bugloc; i++)
 				printf(" ");
