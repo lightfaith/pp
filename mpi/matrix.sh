@@ -1,7 +1,10 @@
 #!/bin/bash
-h1=15
-w2=8
-h2=20
+#h1=15
+#w2=8
+#h2=20
+h1=$1
+w2=$2
+h2=$3
 
 processes=$(($w2*$h1+1))
 echo "Running ./matrix for $processes processes."
